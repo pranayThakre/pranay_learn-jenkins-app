@@ -11,7 +11,7 @@ pipeline {
             }
             steps {
                 sh '''
-                    echo "Build Stage starts..."
+                    echo "Build stage starts..."
                     ls -la
                     node --version
                     npm --version
@@ -21,5 +21,26 @@ pipeline {
                 '''
             }
         }
+        stage('Test') {
+            agent {
+                docker {
+                    image 'node:18-alpine'
+                    reuseNode true
+                }
+            }
+            steps {
+                sh '''
+                    echo "Test stage starts..."
+                    test -f "build/index.html"
+                    npm test
+                '''
+            }
+        }
     }
+
+    // post {
+    //     success {
+    //         archiveArtifacts artifacts : 'build/**'
+    //     }
+    // }
 }
